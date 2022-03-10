@@ -1,2 +1,3 @@
 # Skywatch
-Top down shooter game using gradle
+Top down shooter game using libgdx
+
