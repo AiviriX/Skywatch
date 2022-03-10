@@ -6,17 +6,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
 //Framework for unit creation
 public class Character {
     private Texture image;
     private int characterX;
     private int characterY;
+    private float linearX;
+    private float linearY;
     private float rotation = 360f;
+    private float velocity;
+
     private Sprite sprite;
     private Batch batch;
+    private Vector2 vec;
+    public float acceleration = 10f;
+    public float deceleration = 10f;
     
     public Character(String dir){
+        //Create a new player object
         try {
             this.image = new Texture(dir);
         } catch (RuntimeException e ) {
@@ -24,6 +33,7 @@ public class Character {
         } 
         batch = new SpriteBatch();
         sprite = new Sprite(image, 64, 64);
+        vec = new Vector2(0, 0);
     }
 
     public Texture getCharacter(){ return image;  }
@@ -33,36 +43,57 @@ public class Character {
 
     public void moveLeft() { sprite.setX(characterX-=4); }
     public void moveRight() { sprite.setY(characterX+=4); }
-    public void moveUp() { sprite.setPosition(characterX, characterY+=4); }
+    public void moveUp() { sprite.setPosition(characterX, characterY+=acceleration); }
     public void moveDown() { sprite.setPosition(characterX, characterY-=4); }
     
     public void accelerate(){
+        double l = Math.cos(sprite.getRotation()*3.14/180) * 17;
         
     }
     // public Sprite draw(){
         
     // }
 
-    //Moves the object
+    //Receive input and move the object
     public void move(){
+        //Rotate Right
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             sprite.setRotation(rotation-=10);
             if (rotation > 360) { rotation = 1; }
         }
-
+        //Rotate Left
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
             sprite.setRotation(rotation+=10);
+        } else { 
+
+        }
+        //TODO: Get rotation and accelerate 
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+            acceleration++;
+            sprite.setPosition(characterX, sprite.getY() + acceleration);
+            if (sprite.getY() >= 720){
+                sprite.setY(0);
+            }
+        } else {
+            linearY = acceleration;
+            if (acceleration < 0f){
+                acceleration = 0;
+            } else {
+                acceleration-=acceleration;
+                System.out.println("decrease " + acceleration);
+            }
+            sprite.setPosition(characterX, characterY =+ (int)linearY);
+            System.out.println("huh");
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)){
-            moveUp();
-        } 
-
+        //Move Down?
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             moveDown();
         }
+
         batch.begin();
         sprite.draw(batch);
         batch.end();
+        
     }
 }

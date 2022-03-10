@@ -45,6 +45,6 @@ public class Game extends ApplicationAdapter implements ApplicationListener {
 		img.dispose();
 	}
 
-	
+		
 
 }
