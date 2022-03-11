@@ -4,25 +4,29 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType.Bitmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 //Framework for unit creation
-public class Character extends Sprite {
+public class Character extends SpaceObject {
     private Texture image;
+    //Character position in (x, y)
     private float characterX;
     private float characterY;
-    private float linearX;
-    private float linearY;
+
     private float rotation = 1;
     private float velocity = 0;
 
-    private Sprite sprite;
-    private Batch batch;
-    private Vector2 vec;
     public float acceleration = 2f;
     public float deceleration = 10f;
+
+    private Sprite sprite;
+    private Batch batch;
+    private BitmapFont font;
+    private Vector2 vec;
     
     public Character(String dir){
         //Create a new player object
@@ -31,14 +35,13 @@ public class Character extends Sprite {
         } catch (RuntimeException e ) {
             this.image = new Texture("triangle2.png");
         } 
+
+        font = new BitmapFont();
         batch = new SpriteBatch();
         sprite = new Sprite(image, 64, 64);
+        // sprite.setOrigin(32/2, 32/2);
         sprite.setRotation(rotation);
         vec = new Vector2(0, 0);
-    }
-
-    @Override
-    public void draw(Batch spritebatch){
         
     }
 
@@ -108,6 +111,8 @@ public class Character extends Sprite {
         }
         batch.begin();
         sprite.draw(batch);
+        font.draw(batch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
+        font.draw(batch,"Speed: " + String.valueOf(velocity), 10, 690);
         batch.end();
         
     }

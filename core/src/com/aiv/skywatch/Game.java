@@ -33,10 +33,10 @@ public class Game extends ApplicationAdapter implements ApplicationListener {
 	//Main Loop
 	public void render () {
 		ScreenUtils.clear(1, 0, 0, 1);
-		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClearColor(141, 213, 255, 100);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		chare.move();
+		player.move();
 		
 	}
 	
