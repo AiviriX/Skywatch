@@ -11,8 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 //Framework for unit creation
 public class Character {
     private Texture image;
-    private int characterX;
-    private int characterY;
+    private float characterX;
+    private float characterY;
     private float linearX;
     private float linearY;
     private float rotation = 360f;
@@ -21,7 +21,7 @@ public class Character {
     private Sprite sprite;
     private Batch batch;
     private Vector2 vec;
-    public float acceleration = 10f;
+    public float acceleration = 2f;
     public float deceleration = 10f;
     
     public Character(String dir){
@@ -38,8 +38,8 @@ public class Character {
 
     public Texture getCharacter(){ return image;  }
     public Sprite getSprite(){ return sprite; }
-    public int getX() { return characterX; }
-    public int getY() { return characterY; }
+    public float getX() { return characterX; }
+    public float getY() { return characterY; }
 
     public void moveLeft() { sprite.setX(characterX-=4); }
     public void moveRight() { sprite.setY(characterX+=4); }
@@ -82,18 +82,15 @@ public class Character {
                 acceleration-=acceleration;
                 System.out.println("decrease " + acceleration);
             }
-            sprite.setPosition(characterX, characterY =+ (int)linearY);
-            System.out.println("huh");
+            // sprite.setPosition(characterX, characterY = sprite.getY() + (int) linearY);
         }
 
         //Move Down?
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             moveDown();
         }
-
         batch.begin();
         sprite.draw(batch);
         batch.end();
-        
     }
 }
