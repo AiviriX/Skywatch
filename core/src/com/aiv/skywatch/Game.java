@@ -9,16 +9,19 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.Gdx;
 import com.aiv.skywatch.Units.Character;
+import com.aiv.skywatch.Units.Player;
 
 public class Game extends ApplicationAdapter implements ApplicationListener {
 	SpriteBatch batch;
 	Texture img;
 	Character chare;
+	Player player;
 	@Override
 	public void create () {	
 		batch = new SpriteBatch();
 		img = new Texture("triangle.png");
 		chare = new Character("A");
+		player = new Player("A");
 	}
 
 	@Override
@@ -33,9 +36,7 @@ public class Game extends ApplicationAdapter implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		chare.move();		
-		batch.begin();
-		batch.end();
+		chare.move();
 		
 	}
 	
@@ -43,6 +44,7 @@ public class Game extends ApplicationAdapter implements ApplicationListener {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+		
 	}
 
 		

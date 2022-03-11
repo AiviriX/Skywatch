@@ -9,14 +9,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 //Framework for unit creation
-public class Character {
+public class Character extends Sprite {
     private Texture image;
     private float characterX;
     private float characterY;
     private float linearX;
     private float linearY;
-    private float rotation;
-    private float velocity;
+    private float rotation = 1;
+    private float velocity = 0;
 
     private Sprite sprite;
     private Batch batch;
@@ -29,70 +29,86 @@ public class Character {
         try {
             this.image = new Texture(dir);
         } catch (RuntimeException e ) {
-            this.image = new Texture("triangle.png");
+            this.image = new Texture("triangle2.png");
         } 
         batch = new SpriteBatch();
         sprite = new Sprite(image, 64, 64);
+        sprite.setRotation(rotation);
         vec = new Vector2(0, 0);
     }
 
+    @Override
+    public void draw(Batch spritebatch){
+        
+    }
+
     public Texture getCharacter(){ return image;  }
-    public Sprite getSprite(){ return sprite; }
+    public Sprite getSprite(){ move(); return sprite; }
     public float getX() { return characterX; }
     public float getY() { return characterY; }
 
-    public void moveLeft() { sprite.setX(characterX-=4); }
-    public void moveRight() { sprite.setY(characterX+=4); }
-    public void moveUp() { sprite.setPosition(characterX, characterY+=acceleration); }
-    public void moveDown() { sprite.setPosition(characterX, characterY-=4); }
+
     
-    public void accelerate(){
-        double l = Math.cos(sprite.getRotation()*3.14/180) * 17;
-        
+    public void accelerateForward(float speed){
+        setAccelerationAS(sprite.getRotation(), speed);
     }
-    // public Sprite draw(){
-        
-    // }
+
+    public void setAccelerationAS(float angleDeg, float speed){
+
+    }
+
+    public void update(){
+
+    }
+    
 
     //Receive input and move the object
     public void move(){
         //Rotate Right
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            sprite.setRotation(rotation-=10);
-            if (rotation > 360) { rotation = 1; }
+            if(rotation < 1){
+                rotation = 360;
+            }
+            sprite.setRotation((float) (rotation--));
+            System.out.println(sprite.getRotation());
         }
         //Rotate Left
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            sprite.setRotation(rotation+=10);
-        } else { 
-
-        }
-        //TODO: Get rotation and accelerate 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)){
-            acceleration++;
-            // sprite.setPosition(characterX, sprite.getY() + acceleration);
-            sprite.setY(characterY + (float)(acceleration/(Math.sin(rotation))));
-            sprite.setX(characterX + (float)(acceleration/(Math.cos(rotation))));
-            if (sprite.getY() >= 720){
-                sprite.setY(0);
+            if(rotation > 359){
+                rotation = 1;
             }
-        } else {
-            // linearY = acceleration;
-            // if (acceleration < 0f){
-            //     acceleration = 0;
-            // } else {
-            //     acceleration-=acceleration;
-            //     System.out.println("decrease " + acceleration);
-            // }
-            // sprite.setPosition(characterX, characterY = sprite.getY() + (int) linearY);
+
+            sprite.setRotation((float) rotation++);
+            System.out.println(sprite.getRotation());
+
         }
 
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+            velocity += 0.1f;
+        } else if (velocity < 0) {
+            velocity = 0;
+        } else if ( velocity != 0){
+            velocity -= 0.04;
+        }
+
+        if (velocity > 10){
+            velocity = 10;
+        }
+
+        System.out.println(velocity);
+
+        characterX = (float) (velocity * Math.cos(Math.toRadians(rotation)));
+        characterY =  (float) (velocity * Math.sin(Math.toRadians(rotation)));
+        sprite.translate(characterX, characterY);
         //Move Down?
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            moveDown();
+            
         }
         batch.begin();
         sprite.draw(batch);
         batch.end();
+        
     }
 }
