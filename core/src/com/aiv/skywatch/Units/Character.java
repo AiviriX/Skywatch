@@ -15,7 +15,7 @@ public class Character {
     private float characterY;
     private float linearX;
     private float linearY;
-    private float rotation = 360f;
+    private float rotation;
     private float velocity;
 
     private Sprite sprite;
@@ -70,18 +70,20 @@ public class Character {
         //TODO: Get rotation and accelerate 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)){
             acceleration++;
-            sprite.setPosition(characterX, sprite.getY() + acceleration);
+            // sprite.setPosition(characterX, sprite.getY() + acceleration);
+            sprite.setY(characterY + (float)(acceleration/(Math.sin(rotation))));
+            sprite.setX(characterX + (float)(acceleration/(Math.cos(rotation))));
             if (sprite.getY() >= 720){
                 sprite.setY(0);
             }
         } else {
-            linearY = acceleration;
-            if (acceleration < 0f){
-                acceleration = 0;
-            } else {
-                acceleration-=acceleration;
-                System.out.println("decrease " + acceleration);
-            }
+            // linearY = acceleration;
+            // if (acceleration < 0f){
+            //     acceleration = 0;
+            // } else {
+            //     acceleration-=acceleration;
+            //     System.out.println("decrease " + acceleration);
+            // }
             // sprite.setPosition(characterX, characterY = sprite.getY() + (int) linearY);
         }
 
