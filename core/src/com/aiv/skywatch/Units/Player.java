@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 //Framework for unit creation
-public class Character extends SpaceObject {
+public class Player extends SpaceObject {
     private Texture image;
     //Character position in (x, y)
     private float characterX;
@@ -28,7 +28,7 @@ public class Character extends SpaceObject {
     private BitmapFont font;
     private Vector2 vec;
     
-    public Character(String dir){
+    public Player(String dir){
         //Create a new player object
         try {
             this.image = new Texture(dir);
@@ -72,16 +72,15 @@ public class Character extends SpaceObject {
             if(rotation < 1){
                 rotation = 360;
             }
-            sprite.setRotation((float) (rotation--));
+            sprite.setRotation((float) (rotation-=3));
             System.out.println(sprite.getRotation());
         }
         //Rotate Left
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            if(rotation > 359){
+            if(rotation >= 360){
                 rotation = 1;
             }
-
-            sprite.setRotation((float) rotation++);
+            sprite.setRotation((float) (rotation+=3));
             System.out.println(sprite.getRotation());
 
         }
@@ -99,15 +98,15 @@ public class Character extends SpaceObject {
         if (velocity > 10){
             velocity = 10;
         }
-
-        System.out.println(velocity);
-
         characterX = (float) (velocity * Math.cos(Math.toRadians(rotation)));
         characterY =  (float) (velocity * Math.sin(Math.toRadians(rotation)));
         sprite.translate(characterX, characterY);
         //Move Down?
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            
+            velocity-=1f;
+            if (velocity < 0f){
+                velocity = 0;
+            }
         }
         batch.begin();
         sprite.draw(batch);

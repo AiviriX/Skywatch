@@ -10,7 +10,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Skywatch");
-		config.setWindowedMode(1500, 1000);
+		config.setWindowedMode(1280, 720);
 		config.setForegroundFPS(60);
 		
 
