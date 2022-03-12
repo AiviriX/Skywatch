@@ -2,6 +2,7 @@ package com.aiv.skywatch.Units;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.aiv.skywatch.SpaceObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType.Bitmap;
@@ -112,6 +113,7 @@ public class Player extends SpaceObject {
         sprite.draw(batch);
         font.draw(batch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
         font.draw(batch,"Speed: " + String.valueOf(velocity), 10, 690);
+        font.draw(batch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
         batch.end();
         
     }

@@ -1,4 +1,4 @@
-package com.aiv.skywatch.Units;
+package com.aiv.skywatch;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -85,5 +85,7 @@ public class SpaceObject extends Actor implements Drawable{
 	public void setMinHeight (float minHeight){
         this.minHeight = minHeight;
     }
+
+
 
 }

@@ -8,9 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.Gdx;
-import com.aiv.skywatch.Units.Character;
-import com.aiv.skywatch.Units.Player;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+
+
+import com.aiv.skywatch.Units.Player;
 
 
 public class Game extends ApplicationAdapter implements ApplicationListener {
@@ -25,7 +26,7 @@ public class Game extends ApplicationAdapter implements ApplicationListener {
 	public void create () {	
 		batch = new SpriteBatch();
 		img = new Texture("triangle.png");
-		chare = new Character("A");
+		//chare = new Character("A");
 		player = new Player("A");
 		backgroundTexture = new Texture("genericSpace.jpg");
 		backgroundSprite = new Sprite(backgroundTexture);
