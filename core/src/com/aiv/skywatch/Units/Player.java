@@ -98,15 +98,15 @@ public class Player extends SpaceObject {
         if (velocity > 10){
             velocity = 10;
         }
-
-        System.out.println(velocity);
-
         characterX = (float) (velocity * Math.cos(Math.toRadians(rotation)));
         characterY =  (float) (velocity * Math.sin(Math.toRadians(rotation)));
         sprite.translate(characterX, characterY);
         //Move Down?
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            
+            velocity-=1f;
+            if (velocity < 0f){
+                velocity = 0;
+            }
         }
         batch.begin();
         sprite.draw(batch);
