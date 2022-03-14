@@ -1,6 +1,7 @@
 
 1.) Asteroids
 2.) Collision
+2.1.) Bullets
 3.) Enemies
 4.) Background picture
 5.) Score

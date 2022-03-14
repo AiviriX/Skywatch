@@ -1,6 +1,10 @@
 package com.aiv.skywatch.Units;
 
 import com.aiv.skywatch.SpaceObject;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
+
 
 public class Asteroid extends SpaceObject {
     /*
@@ -9,7 +13,6 @@ public class Asteroid extends SpaceObject {
             - From where will they spawn
             - How many will spawn
             - 
-
     */
     private Asteroid roid;
 

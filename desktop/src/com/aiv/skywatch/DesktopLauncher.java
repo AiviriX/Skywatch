@@ -8,9 +8,10 @@ import com.aiv.skywatch.Game;
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
 	public static void main (String[] arg) {
+		Game game = new Game();
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Skywatch");
-		config.setWindowedMode(1280, 720);
+		config.setWindowedMode(game.getWidth(), game.getHeight());
 		config.setForegroundFPS(60);
 		
 
