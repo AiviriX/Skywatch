@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 
-public class SpaceObject extends Actor implements Drawable{
+public abstract class SpaceObject extends Sprite implements Drawable{
     private Texture image;
     private Actor actor;
     private Batch batch;
@@ -31,6 +32,10 @@ public class SpaceObject extends Actor implements Drawable{
     private float bottomHeight;
     private float minHeight;
     private float minWidth;
+
+    public SpaceObject(){
+
+    }
 
     @Override
 	public void draw(Batch batch, float x, float y, float width, float height){
@@ -86,6 +91,14 @@ public class SpaceObject extends Actor implements Drawable{
         this.minHeight = minHeight;
     }
 
+    public float getVelocity(){
+        return velocity;
+    }
+
+    public void move(){
+        
+    }
 
 
 }
+ 
