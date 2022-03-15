@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 
-public abstract class SpaceObject extends SpriteBatch implements Drawable{
+public abstract class SpaceObject extends Sprite implements Drawable{
     private Texture image;
     private Actor actor;
     private Batch batch;

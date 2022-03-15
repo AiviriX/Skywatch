@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.Screen;
 
 import com.aiv.skywatch.Units.Player;
 
@@ -29,10 +28,10 @@ public class Game extends ApplicationAdapter {
 	Character chare;
 	Player player;
 	Sprite backgroundSprite;
-	OrthographicCamera camera;
 	Stage stage;
 	Viewport viewport;
 	MapRenderer map;
+	OrthographicCamera camera;
 	
 
 	float delta; 
@@ -53,9 +52,9 @@ public class Game extends ApplicationAdapter {
 		player = new Player("A");
 		backgroundTexture = new Texture("genericSpace.jpg");
 		backgroundSprite = new Sprite(backgroundTexture);
-		camera = new OrthographicCamera(50,50);
-		camera.setToOrtho(false);
+		camera = new OrthographicCamera(1280, 720);
 		viewport = new FitViewport(1280, 720, camera);
+
 
 	}
 
@@ -67,20 +66,19 @@ public class Game extends ApplicationAdapter {
 	@Override
 	//Main Loop
 	public void render () {
-		batch.setProjectionMatrix(camera.combined);
 		resize(GAME_WIDTH, GAME_HEIGHT);
 		ScreenUtils.clear(1, 0, 0, 1);
-		Gdx.gl.glClearColor(.141f, .213f, .255f, .255f);
+		Gdx.gl.glClearColor(50/255f, 50f/255f, 50f/255f, 50/255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		viewport.apply();
-		camera.translate(player.getAcceleration(), player.getAcceleration(), 0);
-		camera.position.set(player.getX() ,player.getY(), 0);
-		camera.position.set	((float) player.getX(),(float) player.getY(), 0);
+		
 
 		//Batch Begin
 		batch.begin();
-		batch.draw(backgroundTexture, 0 ,0);
+		batch.setProjectionMatrix(camera.combined);
+		camera.position.set(player.getVector2(), 0);
 		camera.update();
+		batch.draw(backgroundTexture, 0 ,0);
 		batch.end();
 		//Batch End
 

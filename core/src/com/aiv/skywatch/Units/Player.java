@@ -4,6 +4,7 @@ import com.aiv.skywatch.SpaceObject;
 import com.aiv.skywatch.Game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 
 
 //Framework for unit creation
@@ -27,14 +27,14 @@ public class Player extends SpaceObject {
     private float rotation = 1;
     private float velocity = 0;
 
-    public float acceleration = 2f;
-    public float deceleration = 10f;
+ 
 
     private Sprite sprite;
     private Batch batch;
     private BitmapFont font;
     private Vector2 vec;
     private Game game;
+    private OrthographicCamera camera;
     
     public Player(String dir){
         //Create a new player object
@@ -54,29 +54,34 @@ public class Player extends SpaceObject {
         sprite.setRotation(rotation);
         vec = new Vector2(0, 0);
         sprite.translate(game.getWidth() / 2, game.getHeight() / 2);
+        camera = new OrthographicCamera(1280, 720);
+
     }
 
     public Texture getCharacter(){ return image;  }
-    public Sprite getSprite(){ move(); return sprite; }
-    public float getX() { return this.sprite.getX(); }
-    public float getY() { return this.sprite.getY(); }
-    public float getAcceleration(){
-        return acceleration;
+    public Sprite getSprite(){ return sprite; }
+    public float getX() { return sprite.getX(); }
+    public float getY() { return sprite.getY(); }
+    public Vector2 getVector2() { return vec; }
+    public void resize(){
+
     }
 
     public void draw(){
+        
         batch.begin();
-        this.move();
-        sprite.draw(batch);
+        camera.position.set(getX() + 16, getY() + 16, 0);
+        batch.setProjectionMatrix(camera.combined);
+        camera.update();
         font.draw(batch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
         font.draw(batch,"Speed: " + String.valueOf(velocity), 10, 690);
         font.draw(batch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
+        sprite.draw(batch);
         batch.end();
+        this.move();
     }
 
-    /* Receive input from keyboard and move/render object using
-    spritebatch*/
-    @Override
+
     public void move(){
         //Rotate Right
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
@@ -117,6 +122,6 @@ public class Player extends SpaceObject {
                 velocity = 0;
             }
         }
-        
+        vec.set(sprite.getX(), sprite.getY());
     }
 }
