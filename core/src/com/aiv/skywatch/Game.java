@@ -66,16 +66,16 @@ public class Game extends ApplicationAdapter {
 	@Override
 	//Main Loop
 	public void render () {
-		resize(GAME_WIDTH, GAME_HEIGHT);
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		viewport.apply();
 		ScreenUtils.clear(1, 0, 0, 1);
 		Gdx.gl.glClearColor(50/255f, 50f/255f, 50f/255f, 50/255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		viewport.apply();
 		
 
 		//Batch Begin
 		batch.begin();
-		batch.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(player.getPlayerCamera().combined);
 		camera.position.set(player.getVector2(), 0);
 		camera.update();
 		batch.draw(backgroundTexture, 0 ,0);
