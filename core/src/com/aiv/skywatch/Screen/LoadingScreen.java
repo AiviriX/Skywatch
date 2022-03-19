@@ -7,7 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 public class LoadingScreen implements Screen {
-
+    private final com.aiv.skywatch.Game context
     @Override
     public void show() {
 

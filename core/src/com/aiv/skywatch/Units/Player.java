@@ -53,7 +53,7 @@ public class Player extends SpaceObject {
 
         sprite.setRotation(rotation);
         vec = new Vector2(0, 0);
-        sprite.translate(game.getWidth() / 2, game.getHeight() / 2);
+        sprite.translate(Gdx.graphics.getWidth()/ 2, Gdx.graphics.getHeight());
     }
 
     public Texture getCharacter(){ return image;  }
