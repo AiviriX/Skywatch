@@ -1,10 +1,12 @@
 package com.aiv.skywatch;
 
-import com.aiv.skywatch.Screen.LoadingScreen;
+
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -32,6 +34,7 @@ public class Game extends ApplicationAdapter {
 	Viewport viewport;
 	MapRenderer map;
 	OrthographicCamera camera;
+	TextureRegion imgTextureRegion;
 	
 
 	float delta; 
@@ -50,11 +53,12 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		img = new Texture("triangle.png");
 		player = new Player("A");
-		backgroundTexture = new Texture("genericSpace.jpg");
-		backgroundSprite = new Sprite(backgroundTexture);
+		backgroundTexture = new Texture("genericSpace.jpg"); 
+		backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+		imgTextureRegion = new TextureRegion(backgroundTexture);
+		imgTextureRegion.setRegion(-1366, -768,backgroundTexture.getWidth()*2, backgroundTexture.getHeight()*2);
 		camera = new OrthographicCamera(1280, 720);
 		viewport = new FitViewport(1280, 720, camera);
-
 
 	}
 
@@ -63,26 +67,29 @@ public class Game extends ApplicationAdapter {
 		viewport.update(width, height, false);
 	}
 
+
+
 	@Override
 	//Main Loop
 	public void render () {
-		resize(GAME_WIDTH, GAME_HEIGHT);
-		ScreenUtils.clear(1, 0, 0, 1);
-		Gdx.gl.glClearColor(50/255f, 50f/255f, 50f/255f, 50/255);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		viewport.apply();
+		ScreenUtils.clear(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0f, 0, 50/255);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 
 		//Batch Begin
 		batch.begin();
-		batch.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(player.getPlayerCamera().combined);
 		camera.position.set(player.getVector2(), 0);
 		camera.update();
-		batch.draw(backgroundTexture, 0 ,0);
+		batch.draw(imgTextureRegion, 0, 0);
 		batch.end();
 		//Batch End
 
-		player.draw();
+		player.render();
+
 
 
 	}

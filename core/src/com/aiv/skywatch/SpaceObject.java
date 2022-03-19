@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 
-public abstract class SpaceObject extends Sprite implements Drawable{
+public abstract class SpaceObject extends ApplicationAdapter implements Drawable{
     private Texture image;
     private Actor actor;
     private Batch batch;
@@ -99,6 +100,10 @@ public abstract class SpaceObject extends Sprite implements Drawable{
         
     }
 
+    public void onHit(){
+        
+    }
 
 }
+
  
