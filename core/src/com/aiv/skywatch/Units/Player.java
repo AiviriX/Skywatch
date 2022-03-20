@@ -45,7 +45,8 @@ public class Player extends SpaceObject {
     private OrthographicCamera camera;
     private Viewport viewport;
     private ArrayList<Bullet> bullets;
-    
+    private Asteroid asteroid = new Asteroid();
+
     public Player(String dir){
         //Create a new player object
         try {
@@ -146,7 +147,7 @@ public class Player extends SpaceObject {
             } else if ( velocity != 0){
                 velocity -= 0.04;
             }
-       
+
             if (velocity > 5){
                 velocity = 5;
             }
@@ -200,6 +201,8 @@ public class Player extends SpaceObject {
                 }
             }
 
+            asteroid.render((SpriteBatch) batch);
+            asteroid.update(Gdx.graphics.getDeltaTime());
             //Camera to texture center not 0,0
             resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             camera.position.set(getX() + 32, getY() + 32, 0);
@@ -216,6 +219,6 @@ public class Player extends SpaceObject {
             hudbatch.end();
     }
     
-
+    
 }
 

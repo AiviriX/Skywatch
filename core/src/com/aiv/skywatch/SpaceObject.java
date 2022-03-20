@@ -13,10 +13,11 @@ import com.badlogic.gdx.math.Vector2;
 
 
 public abstract class SpaceObject extends ApplicationAdapter implements Drawable{
-    private Texture image;
+    private Texture texture;
     private Actor actor;
     private Batch batch;
     private Vector2 vec;
+    private Sprite sprite;
 
     //Character Positions
     private float characterX;
@@ -102,6 +103,10 @@ public abstract class SpaceObject extends ApplicationAdapter implements Drawable
 
     public void onHit(){
         
+    }
+    
+    public void wrap(){
+
     }
 
 }

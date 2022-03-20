@@ -11,8 +11,6 @@ public class DesktopLauncher {
 		config.setTitle("Skywatch");
 		config.setWindowedMode(game.getWidth(), game.getHeight());
 		config.setForegroundFPS(60);
-		
-
 		new Lwjgl3Application(new Game(), config);
 	}
 }
