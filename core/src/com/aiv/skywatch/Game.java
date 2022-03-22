@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -72,22 +73,27 @@ public class Game extends ApplicationAdapter {
 	@Override
 	//Main Loop
 	public void render () {
+
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		viewport.apply();
 		ScreenUtils.clear(1, 0, 0, 1);
 		Gdx.gl.glClearColor(0, 0f, 0, 50/255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-
 		//Batch Begin
 		batch.begin();
+
 		batch.setProjectionMatrix(player.getPlayerCamera().combined);
 		camera.position.set(player.getVector2(), 0);
 		camera.update();
+
+		//Draw background Image
 		batch.draw(imgTextureRegion, 0, 0);
 		batch.end();
 		//Batch End
+
 		player.render();
+
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package com.aiv.skywatch.Units;
 
 import com.aiv.skywatch.SpaceObject;
 import com.aiv.skywatch.Bullets.Bullet;
+import com.aiv.skywatch.Tools.Hud;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,6 +55,7 @@ public class Player extends SpaceObject  {
     private ArrayList<Bullet> bullets;
     private ArrayList<Asteroid> asteroids;
     private Asteroid asteroid;
+    private Hud hud;
     public int iFrame = 4;
     
     public Player(String dir){
@@ -103,9 +105,13 @@ public class Player extends SpaceObject  {
     public Rectangle getHitbox(){
         return this.rectangle;
     }
-
+    public float getRotation(){
+        return this.rotation;
+    }
+    public float getVelocity(){
+        return velocity;
+    }
     public void resizeViewport(int width, int height){
-
     }
 
     //Immunity frames for the player when the ship gets hit.
@@ -113,11 +119,11 @@ public class Player extends SpaceObject  {
         velocity = 0;
         //If player gets hit, trigger immunity for 4 seconds
         
-        
+
         
     }
 
-     public void wrap() {
+    public void wrap() {
         if (sprite.getX() > 1366 * 2){
             sprite.setX(1366*2);
         } 
@@ -130,12 +136,11 @@ public class Player extends SpaceObject  {
         if (sprite.getY() < 0){
             sprite.setY(0);
         }
-        
+
         //Warns If leaving mission area
         if (sprite.getX() > (1366 * 2 - 200) || sprite.getX() < 200){
             font.draw(hudbatch,"Warning: Leaving Mission Area ", (1280 / 2) - 32, 720 / 2);
         }
-
         if (sprite.getY() > (768 * 2) - 200 || sprite.getY() < 200){
             font.draw(hudbatch,"Warning: Leaving Mission Area ", (1280 / 2) - 32, 720 / 2);
         }
@@ -181,7 +186,7 @@ public class Player extends SpaceObject  {
             } else if ( velocity != 0){
                 velocity -= 0.04;
             }
-       
+
             if (velocity > 5){
                 velocity = 5;
             }
@@ -229,12 +234,15 @@ public class Player extends SpaceObject  {
             
             for(Asteroid asteroid : asteroids){
                 asteroid.render((SpriteBatch) batch);
+                //If player gets hit.
                 if (this.getHitbox().overlaps(asteroid.getHitbox())){
                     System.out.println("true" + lives);
                     getHit(asteroid);
                 } else {
-                    System.out.println("False");
+                    
                 }
+                
+                //If a bullet hits an asteroid.
                 for (Bullet bullet : bullets){
                     if (bullet.getHitbox().overlaps(asteroid.getHitbox())){
                         bullet.remove = true;
@@ -243,7 +251,10 @@ public class Player extends SpaceObject  {
                 }      
             }
             
-
+            if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+                System.out.println("P");
+                this.dispose();
+            }
 
             //Collision detection for asteroid and bullet, or asteroid and player.
             for (Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){
