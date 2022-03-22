@@ -10,11 +10,14 @@ import com.aiv.skywatch.Game;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectArray.less;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -23,7 +26,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 
 //Framework for unit creation
-public class Player extends SpaceObject {
+public class Player extends SpaceObject  {
+    private final int WIDTH = 32;
+    private final int HEIGHT = 32;
+
     private Texture image;
     //Character's momentum??
     private float characterX;
@@ -45,6 +51,8 @@ public class Player extends SpaceObject {
     private OrthographicCamera camera;
     private Viewport viewport;
     private ArrayList<Bullet> bullets;
+    private ArrayList<Asteroid> asteroids;
+    private Asteroid asteroid;
     
     public Player(String dir){
         //Create a new player object
@@ -69,8 +77,13 @@ public class Player extends SpaceObject {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
         bullets = new ArrayList<Bullet>();
+        asteroids = new ArrayList<Asteroid>();
         
-
+        asteroids.add(new Asteroid(1,1));
+        asteroids.add(new Asteroid(-1, -1));
+        asteroids.add(new Asteroid(-4, -3));
+        asteroids.add(new Asteroid(-2, -1));
+        asteroids.add(new Asteroid(-3, 2));
     }
 
     public Texture getCharacter(){ return image;  }
@@ -88,7 +101,7 @@ public class Player extends SpaceObject {
 
     }
 
-    public void wrap() {
+     public void wrap() {
         if (sprite.getX() > 1366 * 2){
             sprite.setX(1366*2);
         } 
@@ -113,14 +126,20 @@ public class Player extends SpaceObject {
         if (sprite.getY() > (768 * 2) - 200 || sprite.getY() < 200){
             font.draw(hudbatch,"Warning: Leaving Mission Area ", (1280 / 2) - 32, 720 / 2);
         }
-
     }
 
+    public boolean intersects(Rectangle otherRectangle){
+        Rectangle thisRectangle = new Rectangle(x, y, WIDTH, HEIGHT);
+        return thisRectangle.overlaps(otherRectangle);
+    }
 
     @Override
     public void render(){
-
         batch.begin();
+        x = getX();
+        y = getY();
+        
+
         delta = Gdx.graphics.getDeltaTime();
         batch.setProjectionMatrix(camera.combined);
 
@@ -178,9 +197,8 @@ public class Player extends SpaceObject {
                 }
             }
             
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation, 1));
-                //right
+            if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation, 1));                
             }
 
             //Set Vector2 for x and y of player sprite.
@@ -191,20 +209,32 @@ public class Player extends SpaceObject {
                 bullet.render((SpriteBatch)batch);
             }
 
+            for(Asteroid asteroid : asteroids){
+                asteroid.render((SpriteBatch) batch);      
+                for (Bullet bullet : bullets){
+                    if (bullet.getHitbox().overlaps(asteroid.getHitbox())){
+                        bullet.remove = true;
+                    }
+                }      
+            }
+
             //Bullet update
             for ( Iterator<Bullet> it = bullets.iterator(); it.hasNext(); ){             
                 Bullet bullets = it.next();
                 bullets.update(delta);
                 if(bullets.remove){
-                    it.remove();
-                }
+                    it.remove();                    
+                }             
             }
+
+
+            //Asteroid Movement Handling
+            
 
             //Camera to texture center not 0,0
             resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            camera.position.set(getX() + 32, getY() + 32, 0);
+            camera.position.set(x + 32, y + 32, 0);
             camera.update();
-            //These are supposed to be in a HUD overlay.
             sprite.draw(batch);
             batch.end();
 
@@ -215,7 +245,5 @@ public class Player extends SpaceObject {
             wrap();
             hudbatch.end();
     }
-    
-
 }
 

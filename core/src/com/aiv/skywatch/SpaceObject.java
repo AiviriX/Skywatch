@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
@@ -33,6 +34,7 @@ public abstract class SpaceObject extends ApplicationAdapter implements Drawable
     private float bottomHeight;
     private float minHeight;
     private float minWidth;
+    private Rectangle rectangle;
 
     public SpaceObject(){
 
@@ -97,10 +99,6 @@ public abstract class SpaceObject extends ApplicationAdapter implements Drawable
     }
 
     public void move(){
-        
-    }
-
-    public void onHit(){
         
     }
 

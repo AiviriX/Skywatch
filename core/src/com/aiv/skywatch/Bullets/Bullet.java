@@ -1,20 +1,27 @@
 package com.aiv.skywatch.Bullets;
 
+import com.aiv.skywatch.Tools.Hitbox;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+
+import org.w3c.dom.css.Rect;
 
 public class Bullet {
-    public static final float SPEED = 10;
+    public static final float SPEED = 1000f;
 
     public static float speed;
     private float rotationalVelocity;
     private float staticRotation;
     private static Texture texture;
-
+    private final int WIDTH = 16;
+    private final int HEIGHT = 16;
+    private Rectangle rectangle;
     float x, y;
-
+    Hitbox hitbox;
     public boolean remove = false;
 
     private Sprite sprite;
@@ -33,15 +40,18 @@ public class Bullet {
         this.y = y;
         this.rotationalVelocity = rotation;
         this.staticRotation = rotation;
+        this.rectangle = new Rectangle(x, y, 16,16);
+//        this.hitbox = new Hitbox(x, y, WIDTH, HEIGHT);
         sprite = new Sprite(Bullet.texture);
         sprite.setSize(16, 16);
-        
     }
 
-    //Find out where  the ship points and fire at that direction 
+    
+
+    //Find out where the ship points and fire at that direction & despawns bullet when they reach the corner.
     public void update(float deltaTime){
-        y += (SPEED * Math.sin(Math.toRadians(rotationalVelocity)));
-        x += (SPEED * Math.cos(Math.toRadians(rotationalVelocity)));
+        y += (SPEED * Math.sin(Math.toRadians(rotationalVelocity)) * deltaTime);
+        x += (SPEED * Math.cos(Math.toRadians(rotationalVelocity)) * deltaTime);
         sprite.setRotation(staticRotation);
 
         //Turn this to a timer
@@ -53,14 +63,18 @@ public class Bullet {
             remove = true;
         } 
 
-        
-
-
+    
+        rectangle.setX(x);
+        rectangle.setY(y);
     }
 
     public void render(SpriteBatch batch){
         batch.draw(sprite, this.x + 8, this.y + 8);
     }
     
+    public Rectangle getHitbox(){
+        return this.rectangle; 
+    }
 
+    
 }
