@@ -36,6 +36,8 @@ public class Player extends SpaceObject  {
     private float characterX;
     private float characterY;
     
+    private float nexttime;
+    private float currenttime;
     private float x;
     private float y;
     private float rotation = 1;
@@ -117,9 +119,9 @@ public class Player extends SpaceObject  {
     //Immunity frames for the player when the ship gets hit.
     public void getHit(SpaceObject object){
         velocity = 0;
+        lives--;
         //If player gets hit, trigger immunity for 4 seconds
-        
-
+        nexttime = System.nanoTime() + (float)(4*(Math.pow(10, 9)));
         
     }
 
@@ -153,6 +155,11 @@ public class Player extends SpaceObject  {
 
     @Override
     public void render(){
+        currenttime = System.nanoTime();
+        System.out.println("lives " + lives);
+        System.out.println("nexttime " + nexttime);
+        System.out.println("currenttime " + currenttime);
+
         batch.begin();
         x = getX();
         y = getY();
@@ -236,8 +243,12 @@ public class Player extends SpaceObject  {
                 asteroid.render((SpriteBatch) batch);
                 //If player gets hit.
                 if (this.getHitbox().overlaps(asteroid.getHitbox())){
-                    System.out.println("true" + lives);
-                    getHit(asteroid);
+                    //Checks if the time is greater than the end of I frames
+                    if (currenttime > nexttime){
+                        
+                        System.out.println("true" + lives);
+                        getHit(asteroid); 
+                    }
                 } else {
                     
                 }
