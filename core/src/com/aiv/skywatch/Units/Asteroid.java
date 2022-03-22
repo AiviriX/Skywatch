@@ -63,10 +63,6 @@ public class Asteroid extends SpaceObject{
         sprite.setY(y);
     }
 
-    public Rectangle getBoundingBox(){
-        return this.rectangle;
-    }
-
     public void render(SpriteBatch batch){
         batch.draw(sprite, this.x + 8, this.y + 8);
         this.update(Gdx.graphics.getDeltaTime());

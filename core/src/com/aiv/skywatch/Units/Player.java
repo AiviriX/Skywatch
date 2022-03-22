@@ -37,12 +37,13 @@ public class Player extends SpaceObject  {
     
     private float x;
     private float y;
-
     private float rotation = 1;
     private float velocity = 0;
     private float zoomSpeed = 1;
     private float delta;
+    private int lives = 3;
 
+    private Rectangle rectangle;
     private Sprite sprite;
     private Batch batch, hudbatch;
     private BitmapFont font;
@@ -53,6 +54,7 @@ public class Player extends SpaceObject  {
     private ArrayList<Bullet> bullets;
     private ArrayList<Asteroid> asteroids;
     private Asteroid asteroid;
+    public int iFrame = 4;
     
     public Player(String dir){
         //Create a new player object
@@ -61,6 +63,7 @@ public class Player extends SpaceObject  {
         } catch (RuntimeException e ) {
             this.image = new Texture("triangle-3.png");
         } 
+
 
         game = new Game();
         //Font for drawing text on screen
@@ -71,13 +74,14 @@ public class Player extends SpaceObject  {
         sprite = new Sprite(image, 32, 32);
         sprite.setRotation(rotation);
         vec = new Vector2(0, 0);
-
+        
         sprite.translate(game.getWidth(), game.getHeight());
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
         bullets = new ArrayList<Bullet>();
         asteroids = new ArrayList<Asteroid>();
+        this.rectangle = new Rectangle(x, y, 32, 32);
         
         asteroids.add(new Asteroid(1,1));
         asteroids.add(new Asteroid(-1, -1));
@@ -87,7 +91,7 @@ public class Player extends SpaceObject  {
     }
 
     public Texture getCharacter(){ return image;  }
-    public Sprite getSprite(){ move(); return sprite; }
+    //public Sprite getSprite(){ move(); return sprite; }
     public float getX() { return this.sprite.getX(); }
     public float getY() { return this.sprite.getY(); }
     public Camera getPlayerCamera() {
@@ -96,24 +100,33 @@ public class Player extends SpaceObject  {
     public Vector2 getVector2(){
         return this.vec;
     }
+    public Rectangle getHitbox(){
+        return this.rectangle;
+    }
 
     public void resizeViewport(int width, int height){
 
+    }
+
+    //Immunity frames for the player when the ship gets hit.
+    public void getHit(SpaceObject object){
+        velocity = 0;
+        //If player gets hit, trigger immunity for 4 seconds
+        
+        
+        
     }
 
      public void wrap() {
         if (sprite.getX() > 1366 * 2){
             sprite.setX(1366*2);
         } 
-
         if (sprite.getX() < 0){
             sprite.setX(0);
         }
-
         if (sprite.getY() > 768 * 2){
             sprite.setY(768 * 2);
         }
-
         if (sprite.getY() < 0){
             sprite.setY(0);
         }
@@ -138,7 +151,10 @@ public class Player extends SpaceObject  {
         batch.begin();
         x = getX();
         y = getY();
-        
+        if (lives <= 0){
+            System.out.println("Game Over!");
+        }
+
 
         delta = Gdx.graphics.getDeltaTime();
         batch.setProjectionMatrix(camera.combined);
@@ -172,6 +188,8 @@ public class Player extends SpaceObject  {
             characterX = (float) (velocity * Math.cos(Math.toRadians(rotation)));
             characterY =  (float) (velocity * Math.sin(Math.toRadians(rotation)));
             sprite.translate(characterX, characterY);
+            rectangle.setX(getX());
+            rectangle.setY(getY());
     
             //Move Down?
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
@@ -197,28 +215,45 @@ public class Player extends SpaceObject  {
                 }
             }
             
-            if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation, 1));                
             }
 
             //Set Vector2 for x and y of player sprite.
             vec.set(sprite.getX(), sprite.getY());
 
-            
+            //Draw Bullets and Asteroids and update them
             for(Bullet bullet: bullets){
                 bullet.render((SpriteBatch)batch);
             }
-
+            
             for(Asteroid asteroid : asteroids){
-                asteroid.render((SpriteBatch) batch);      
+                asteroid.render((SpriteBatch) batch);
+                if (this.getHitbox().overlaps(asteroid.getHitbox())){
+                    System.out.println("true" + lives);
+                    getHit(asteroid);
+                } else {
+                    System.out.println("False");
+                }
                 for (Bullet bullet : bullets){
                     if (bullet.getHitbox().overlaps(asteroid.getHitbox())){
                         bullet.remove = true;
+                        asteroid.remove = true;
                     }
                 }      
             }
+            
 
-            //Bullet update
+
+            //Collision detection for asteroid and bullet, or asteroid and player.
+            for (Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){
+                Asteroid asteroids = it.next();
+
+                if(asteroids.remove){
+                    it.remove();
+                }
+            }
+
             for ( Iterator<Bullet> it = bullets.iterator(); it.hasNext(); ){             
                 Bullet bullets = it.next();
                 bullets.update(delta);
@@ -226,10 +261,6 @@ public class Player extends SpaceObject  {
                     it.remove();                    
                 }             
             }
-
-
-            //Asteroid Movement Handling
-            
 
             //Camera to texture center not 0,0
             resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

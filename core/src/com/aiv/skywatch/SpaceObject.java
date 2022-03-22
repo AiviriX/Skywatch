@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
-public abstract class SpaceObject extends ApplicationAdapter implements Drawable{
+public abstract class SpaceObject extends ApplicationAdapter{
     private Texture image;
     private Actor actor;
     private Batch batch;
@@ -40,66 +40,11 @@ public abstract class SpaceObject extends ApplicationAdapter implements Drawable
 
     }
 
-    @Override
-	public void draw(Batch batch, float x, float y, float width, float height){
 
-    }
 
-    @Override
-	public float getLeftWidth (){
-        return this.leftWidth;
-    }
 
-	public void setLeftWidth (float leftWidth){
-        this.leftWidth = leftWidth;
-    }
-
-	public float getRightWidth (){
-        return this.rightWidth;
-    }
-
-	public void setRightWidth (float rightWidth){
-        this.rightWidth = rightWidth;
-    }
-
-	public float getTopHeight (){
-        return this.topHeight;
-    }
-
-	public void setTopHeight (float topHeight){
-        this.topHeight = topHeight;
-    }
-
-	public float getBottomHeight (){
-        return this.bottomHeight;
-    }
-
-	public void setBottomHeight (float bottomHeight){
-        this.bottomHeight = bottomHeight;
-    }
-
-	public float getMinWidth (){
-        return this.minWidth;
-    }
-
-	public void setMinWidth (float minWidth){
-        this.minWidth = minWidth;
-    }
-
-	public float getMinHeight (){
-        return this.minHeight;
-    }
-
-	public void setMinHeight (float minHeight){
-        this.minHeight = minHeight;
-    }
-
-    public float getVelocity(){
-        return velocity;
-    }
-
-    public void move(){
-        
+    public Rectangle getHitbox(){
+        return this.rectangle; 
     }
 
 }

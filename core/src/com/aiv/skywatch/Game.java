@@ -87,11 +87,7 @@ public class Game extends ApplicationAdapter {
 		batch.draw(imgTextureRegion, 0, 0);
 		batch.end();
 		//Batch End
-
 		player.render();
-
-
-
 	}
 	
 	@Override
