@@ -93,7 +93,6 @@ public class Game extends ApplicationAdapter {
 		//Batch End
 
 		player.render();
-
 	}
 	
 	@Override

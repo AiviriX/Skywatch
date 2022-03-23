@@ -121,8 +121,7 @@ public class Player extends SpaceObject  {
         velocity = 0;
         lives--;
         //If player gets hit, trigger immunity for 4 seconds
-        nexttime = System.nanoTime() + (float)(4*(Math.pow(10, 9)));
-        
+        nexttime = System.nanoTime() + (float)(2*(Math.pow(10, 9)));
     }
 
     public void wrap() {
@@ -295,6 +294,7 @@ public class Player extends SpaceObject  {
             font.draw(hudbatch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
             font.draw(hudbatch,"Speed: " + String.valueOf(velocity), 10, 690);
             font.draw(hudbatch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
+            font.draw(hudbatch, "Lives " + lives, 10, 650);
             wrap();
             hudbatch.end();
     }

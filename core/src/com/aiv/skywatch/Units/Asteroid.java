@@ -72,5 +72,4 @@ public class Asteroid extends SpaceObject{
         return this.rectangle; 
     }
 
-    
 }
