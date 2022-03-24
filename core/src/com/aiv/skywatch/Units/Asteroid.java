@@ -36,7 +36,7 @@ public class Asteroid extends SpaceObject {
 
     public Asteroid(float x, float rotation){
         if (texture == null){
-            Asteroid.texture = new Texture("asteroid_128.png");
+            Asteroid.texture = new Texture(Gdx.files.internal("asteroid.png"));
         }
         
         
@@ -46,6 +46,7 @@ public class Asteroid extends SpaceObject {
         this.staticRotation = rotation;
         sprite = new Sprite(Asteroid.texture);
         sprite.setSize(32, 32);
+        rectangle = new Rectangle(x, y, 128, 128);
         
     }
 
