@@ -89,24 +89,14 @@ public class Player extends SpaceObject  {
     }
 
     public Texture getCharacter(){ return image;  }
-    //public Sprite getSprite(){ move(); return sprite; }
     public float getX() { return this.sprite.getX(); }
     public float getY() { return this.sprite.getY(); }
-    public Camera getPlayerCamera() {
-        return this.camera;
-    }
-    public Vector2 getVector2(){
-        return this.vec;
-    }
-    public Rectangle getHitbox(){
-        return this.rectangle;
-    }
-    public float getRotation(){
-        return this.rotation;
-    }
-    public float getVelocity(){
-        return velocity;
-    }
+    public Camera getPlayerCamera() { return this.camera; }
+    public Vector2 getVector2(){ return this.vec; }
+    public Rectangle getHitbox(){ return this.rectangle; }
+    public float getRotation(){ return this.rotation; }
+    public float getVelocity(){ return velocity; }
+
     public void resizeViewport(int width, int height){
     }
 
