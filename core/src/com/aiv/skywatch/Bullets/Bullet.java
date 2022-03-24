@@ -24,7 +24,7 @@ public class Bullet {
      * @param x - X Origin of the bullet
      * @param y - Y Origin of the bullet
      */
-    public Bullet(float x, float y, float rotation, int size){
+    public Bullet(float x, float y, float rotation){
         if (texture == null){
             Bullet.texture = new Texture("BulletSprite.png");
         }
@@ -52,9 +52,6 @@ public class Bullet {
         if(x > 1366 * 2|| x < 0){
             remove = true;
         } 
-
-        
-
 
     }
 

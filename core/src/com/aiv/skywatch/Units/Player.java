@@ -5,6 +5,7 @@ import com.aiv.skywatch.Bullets.Bullet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.aiv.skywatch.Game;
 import com.badlogic.gdx.Input;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -37,6 +39,9 @@ public class Player extends SpaceObject {
     private float zoomSpeed = 1;
     private float delta;
 
+    private float asteroidSpawnTimer;
+    Random random;
+
     private Sprite sprite;
     private Batch batch, hudbatch;
     private BitmapFont font;
@@ -45,6 +50,13 @@ public class Player extends SpaceObject {
     private OrthographicCamera camera;
     private Viewport viewport;
     private ArrayList<Bullet> bullets;
+
+
+
+    //Asteroid Related
+    private ArrayList<Asteroid> asteroids;
+    private float min_spawn_time = 0.1f; //Can change values to make asteroids fall faster/slower
+    private float max_spawn_time = 1f;
     
     public Player(String dir){
         //Create a new player object
@@ -69,7 +81,11 @@ public class Player extends SpaceObject {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
         bullets = new ArrayList<Bullet>();
-        
+
+        //Asteroid related
+        asteroids = new ArrayList<Asteroid>(); //Array List for Asteroid
+        random = new Random(); //Random for Asteroid spawner
+        asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time; //spawn timer 
 
     }
 
@@ -179,10 +195,10 @@ public class Player extends SpaceObject {
             }
             
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation, 1));
+                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation));
                 //right
             }
-
+           
             //Set Vector2 for x and y of player sprite.
             vec.set(sprite.getX(), sprite.getY());
 
@@ -195,10 +211,41 @@ public class Player extends SpaceObject {
             for ( Iterator<Bullet> it = bullets.iterator(); it.hasNext(); ){             
                 Bullet bullets = it.next();
                 bullets.update(delta);
+    
+                
                 if(bullets.remove){
                     it.remove();
                 }
             }
+
+
+            //Asteroid Spawn Timer
+            asteroidSpawnTimer -= delta;
+            if (asteroidSpawnTimer <=0){
+                asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time;
+                asteroids.add(new Asteroid(random.nextInt(2470 - 16),rotation));
+            }
+
+            //Asteroid Render 
+            for (Asteroid asteroid: asteroids){
+
+                asteroid.render((SpriteBatch) batch); //renders top-bottom asteroids
+
+            }
+            
+            
+
+            //asteroid Update
+            for ( Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){             
+                Asteroid asteroids = it.next();
+
+                asteroids.update(delta);
+
+                if(asteroids.remove){
+                    it.remove();
+                }
+            }
+            
 
             //Camera to texture center not 0,0
             resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -214,6 +261,9 @@ public class Player extends SpaceObject {
             font.draw(hudbatch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
             wrap();
             hudbatch.end();
+
+            
+           
     }
     
 
