@@ -3,8 +3,12 @@ package com.aiv.skywatch.Units;
 import com.aiv.skywatch.SpaceObject;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Texture;
+
+import java.util.Random;
+
+import com.aiv.skywatch.Game;
 
 
 public class Asteroid extends SpaceObject {
@@ -15,31 +19,45 @@ public class Asteroid extends SpaceObject {
             - How many will spawn
             - 
     */
-    private float SPEED, WIDTH, x, y;
-    private float spawnX, spawnY;
-    private Texture texture;
-    private Asteroid asteroid;
-    public boolean dead = false;
-    private Player player;
+    private static float SPEED = 200;
+    private static Texture texture;
+    private float staticRotation;
+    private Sprite sprite;
+    public boolean remove = false;
 
-    public Asteroid(Player player){
-        //Handling asteroid spawns within a radius from a player.
-        this.player = player;
-        this.x = Gdx.graphics.getWidth() * 2;
-        this.y = Gdx.graphics.getWidth() * 2;
-        this.texture = new Texture(Gdx.files.internal("badlogic.jpg"));
-        //Get the players coordinates and create a spawning radius
-    }
+    float x,y,z;
+    
 
-    public void onHit(){
+    public Asteroid(float x, float rotation){
+        if (texture == null){
+            Asteroid.texture = new Texture("asteroid_128.png");
+        }
+        
+        
+        this.x = x;
+        this.y = 1540;
+        this.z = 0;
+        this.staticRotation = rotation;
+        sprite = new Sprite(Asteroid.texture);
+        sprite.setSize(32, 32);
         
     }
 
     public void update(float deltaTime){
-        
+
+        y -= SPEED * deltaTime;
+        sprite.setRotation(staticRotation); //physics
+
+        if (y < -50){
+            remove = true;
+        }
+
+
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(texture, x, y);
+        batch.draw(sprite, x, y);
     }
+
+
 }
