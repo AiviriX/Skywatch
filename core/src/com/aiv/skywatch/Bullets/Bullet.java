@@ -31,7 +31,7 @@ public class Bullet {
      * @param x - X Origin of the bullet
      * @param y - Y Origin of the bullet
      */
-    public Bullet(float x, float y, float rotation, int size){
+    public Bullet(float x, float y, float rotation){
         if (texture == null){
             Bullet.texture = new Texture("BulletSprite.png");
         }

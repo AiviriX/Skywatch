@@ -6,6 +6,7 @@ import com.aiv.skywatch.Tools.Hud;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.aiv.skywatch.Game;
 import com.badlogic.gdx.Input;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -47,6 +49,9 @@ public class Player extends SpaceObject  {
     private int lives = 3;
 
     private Rectangle rectangle;
+    private float asteroidSpawnTimer;
+    Random random;
+
     private Sprite sprite;
     private Batch batch, hudbatch;
     private BitmapFont font;
@@ -59,6 +64,12 @@ public class Player extends SpaceObject  {
     private Asteroid asteroid;
     private Hud hud;
     public int iFrame = 4;
+
+
+
+    //Asteroid Related
+    private float min_spawn_time = 0.1f; //Can change values to make asteroids fall faster/slower
+    private float max_spawn_time = 1f;
     
     public Player(String dir){
         //Create a new player object
@@ -83,9 +94,16 @@ public class Player extends SpaceObject  {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
         bullets = new ArrayList<Bullet>();
-        asteroids = new ArrayList<Asteroid>();
+
+        //Hitbox
         this.rectangle = new Rectangle(x, y, 32, 32);
         
+
+        //Asteroid related
+        asteroids = new ArrayList<Asteroid>(); //Array List for Asteroid
+        random = new Random(); //Random for Asteroid spawner
+        asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time; //spawn timer 
+
     }
 
     public Texture getCharacter(){ return image;  }
@@ -214,9 +232,10 @@ public class Player extends SpaceObject  {
             }
             
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation, 1));                
+                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation));
+                //right
             }
-
+           
             //Set Vector2 for x and y of player sprite.
             vec.set(sprite.getX(), sprite.getY());
 
@@ -264,6 +283,8 @@ public class Player extends SpaceObject  {
             for ( Iterator<Bullet> it = bullets.iterator(); it.hasNext(); ){             
                 Bullet bullets = it.next();
                 bullets.update(delta);
+    
+                
                 if(bullets.remove){
                     it.remove();                    
                 }             
@@ -272,6 +293,35 @@ public class Player extends SpaceObject  {
             if (asteroids.isEmpty()){
                 System.out.println("Asteroids are empty");
             }
+
+
+            //Asteroid Spawn Timer
+            asteroidSpawnTimer -= delta;
+            if (asteroidSpawnTimer <=0){
+                asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time;
+                asteroids.add(new Asteroid(random.nextInt(2470 - 16),rotation));
+            }
+
+            //Asteroid Render 
+            for (Asteroid asteroid: asteroids){
+
+                asteroid.render((SpriteBatch) batch); //renders top-bottom asteroids
+
+            }
+            
+            
+
+            //asteroid Update
+            for ( Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){             
+                Asteroid asteroids = it.next();
+
+                asteroids.update(delta);
+
+                if(asteroids.remove){
+                    it.remove();
+                }
+            }
+            
 
             //Camera to texture center not 0,0
             resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -287,6 +337,9 @@ public class Player extends SpaceObject  {
             font.draw(hudbatch, "Lives " + lives, 10, 650);
             wrap();
             hudbatch.end();
+
+            
+           
     }
 }
 

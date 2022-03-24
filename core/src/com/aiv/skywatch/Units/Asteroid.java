@@ -8,68 +8,71 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
+import java.util.Random;
+
+import com.aiv.skywatch.Game;
 
 
-public class Asteroid extends SpaceObject{
-    public static float speed;
-    private float rotationalVelocity;
-    private float staticRotation;
+public class Asteroid extends SpaceObject {
+    /*
+        TODO:
+        Asteroid Spawning
+            - From where will they spawn
+            - How many will spawn
+            - 
+    */
+    private static float SPEED = 200;
     private static Texture texture;
+    private float staticRotation;
+    private Sprite sprite;
+    public boolean remove = false;
     private Rectangle rectangle;
     Hitbox hitbox;
-    float x, y;
     int spdx, spdy;
 
-    public boolean remove = false;
 
-    private Sprite sprite;
+    float x,y,z;
     
 
-    public Asteroid(int spdx, int spdy){
+    public Asteroid(float x, float rotation){
         if (texture == null){
-            Asteroid.texture = new Texture("triangle2.png");
+            Asteroid.texture = new Texture("asteroid_128.png");
         }
-        this.x = 1360;
-        this.y = 720;
+        
+        
+        this.x = x;
+        this.y = 1540;
+        this.z = 0;
+        this.staticRotation = rotation;
         sprite = new Sprite(Asteroid.texture);
-        this.rectangle = new Rectangle(x, y, 64, 64);
-        this.spdx = spdx;
-        this.spdy = spdy;
+        sprite.setSize(32, 32);
+        
     }
 
     public void update(float deltaTime){
-        x += spdx;
-        y += spdy;
-        if (sprite.getX() > 1366 * 2){
-            x = 0;
-            System.out.println("Wtf");
-        } 
 
-        if (sprite.getX() < 0){
-            x = 1366 * 2;
+        y -= SPEED * deltaTime;
+        sprite.setRotation(staticRotation); //physics
+
+
+        if (y < -50){
+            remove = true;
         }
 
-        if (sprite.getY() > 768 * 2){
-            y = 0;
-        }
-
-        if (sprite.getY() < 0){
-            y = 768 * 2;
-        }
-
+        //Move hitbox       
         rectangle.setX(x);
         rectangle.setY(y);
-        sprite.setX(x);
-        sprite.setY(y);
+
+
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(sprite, this.x + 8, this.y + 8);
-        this.update(Gdx.graphics.getDeltaTime());
+        batch.draw(sprite, x, y);
     }
 
     public Rectangle getHitbox(){
         return this.rectangle; 
     }
+
 
 }

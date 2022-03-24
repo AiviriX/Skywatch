@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapRenderer;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
@@ -19,6 +21,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.aiv.skywatch.Units.Player;
 
+import java.util.ArrayList;
+
+import com.aiv.skywatch.Units.Asteroid;
 
 
 public class Game extends ApplicationAdapter {
@@ -36,7 +41,6 @@ public class Game extends ApplicationAdapter {
 	MapRenderer map;
 	OrthographicCamera camera;
 	TextureRegion imgTextureRegion;
-	
 
 	float delta; 
 	public int getWidth(){
