@@ -80,18 +80,12 @@ public class Player extends SpaceObject  {
         vec = new Vector2(0, 0);
         
         sprite.translate(game.getWidth(), game.getHeight());
-
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
         bullets = new ArrayList<Bullet>();
         asteroids = new ArrayList<Asteroid>();
         this.rectangle = new Rectangle(x, y, 32, 32);
         
-        asteroids.add(new Asteroid(1,1));
-        asteroids.add(new Asteroid(-1, -1));
-        asteroids.add(new Asteroid(-4, -3));
-        asteroids.add(new Asteroid(-2, -1));
-        asteroids.add(new Asteroid(-3, 2));
     }
 
     public Texture getCharacter(){ return image;  }
@@ -151,6 +145,9 @@ public class Player extends SpaceObject  {
         Rectangle thisRectangle = new Rectangle(x, y, WIDTH, HEIGHT);
         return thisRectangle.overlaps(otherRectangle);
     }
+
+    
+
 
     @Override
     public void render(){
@@ -243,8 +240,7 @@ public class Player extends SpaceObject  {
                 //If player gets hit.
                 if (this.getHitbox().overlaps(asteroid.getHitbox())){
                     //Checks if the time is greater than the end of I frames
-                    if (currenttime > nexttime){
-                        
+                    if (currenttime > nexttime){                      
                         System.out.println("true" + lives);
                         getHit(asteroid); 
                     }
@@ -281,6 +277,10 @@ public class Player extends SpaceObject  {
                 if(bullets.remove){
                     it.remove();                    
                 }             
+            }
+
+            if (asteroids.isEmpty()){
+                System.out.println("Asteroids are empty");
             }
 
             //Camera to texture center not 0,0
