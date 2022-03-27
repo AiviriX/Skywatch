@@ -1,354 +1,388 @@
 package com.aiv.skywatch.Screens;
 
+import com.aiv.skywatch.SpaceObject;
+import com.aiv.skywatch.Bullets.Bullet;
+import com.aiv.skywatch.Units.Asteroid;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
+import com.aiv.skywatch.SkyGame;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectArray.less;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
-import com.aiv.skywatch.SpaceGame;
-import com.aiv.skywatch.Units.Asteroid;
-import com.aiv.skywatch.Bullets.Bullet;
-import com.aiv.skywatch.Units.Explosion;
-import com.aiv.skywatch.Tools.CollisionRect;
 
+//Framework for unit creation
 public class MainGameScreen implements Screen {
-	
-	public static final float SPEED = 300;
-	
-	public static final float SHIP_ANIMATION_SPEED = 0.5f;
-	public static final int SHIP_WIDTH_PIXEL = 17;
-	public static final int SHIP_HEIGHT_PIXEL = 32;
-	public static final int SHIP_WIDTH = SHIP_WIDTH_PIXEL * 3;
-	public static final int SHIP_HEIGHT = SHIP_HEIGHT_PIXEL * 3;
-	
-	public static final float ROLL_TIMER_SWITCH_TIME = 0.25f;
-	public static final float SHOOT_WAIT_TIME = 0.3f;
-	
-	public static final float MIN_ASTEROID_SPAWN_TIME = 0.05f;
-	public static final float MAX_ASTEROID_SPAWN_TIME = 0.1f;
-	
-	Animation[] rolls;
-	
-	float x;
-	float y;
-	int roll;
-	float rollTimer;
-	float stateTime;
-	float shootTimer;
-	float asteroidSpawnTimer;
-	
-	Random random;
-	
-	SpaceGame game;
-	
-	ArrayList<Bullet> bullets;
-	ArrayList<Asteroid> asteroids;
-	ArrayList<Explosion> explosions;
-	
-	Texture blank;
-	Texture controls;
-	
-	BitmapFont scoreFont;
-	
-	CollisionRect playerRect;
-	
-	float health = 1;//0 = dead, 1 = full health
-	
-	int score;
-	
-	boolean showControls = true;
-	
-	public MainGameScreen (SpaceGame game) {
-		this.game = game;
-		y = 15;
-		x = SpaceGame.WIDTH / 2 - SHIP_WIDTH / 2;
-		bullets = new ArrayList<Bullet>();
-		asteroids = new ArrayList<Asteroid>();
-		explosions = new ArrayList<Explosion>();
-		scoreFont = new BitmapFont(Gdx.files.internal("fonts/score.fnt"));
-		
-		playerRect = new CollisionRect(0, 0, SHIP_WIDTH, SHIP_HEIGHT);
-		
-		blank = new Texture("blank.png");
-		if (SpaceGame.IS_MOBILE)
-			controls = new Texture("controls.png");
-		
-		score = 0;
-		
-		random = new Random();
-		asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
-		
-		shootTimer = 0;
-		
-		roll = 2;
-		rollTimer = 0;
-		rolls = new Animation[5];
-		
-		TextureRegion[][] rollSpriteSheet = TextureRegion.split(new Texture("ship.png"), SHIP_WIDTH_PIXEL, SHIP_HEIGHT_PIXEL);
-		
-		rolls[0] = new Animation(SHIP_ANIMATION_SPEED, rollSpriteSheet[2]);//All left
-		rolls[1] = new Animation(SHIP_ANIMATION_SPEED, rollSpriteSheet[1]);
-		rolls[2] = new Animation(SHIP_ANIMATION_SPEED, rollSpriteSheet[0]);//No tilt
-		rolls[3] = new Animation(SHIP_ANIMATION_SPEED, rollSpriteSheet[3]);
-		rolls[4] = new Animation(SHIP_ANIMATION_SPEED, rollSpriteSheet[4]);//Right
-		
-		game.scrollingBackground.setSpeedFixed(false);
-	}
-	
-	@Override
-	public void show () {
-		
-	}
+    private final int WIDTH = 32;
+    private final int HEIGHT = 32;
 
-	@Override
-	public void render (float delta) {
-		//Shooting code
-		shootTimer += delta;
-		if ((isRight() || isLeft()) && shootTimer >= SHOOT_WAIT_TIME) {
-			shootTimer = 0;
-			
-			//Stop showing controls when a shot has been shot
-			showControls = false;
-			
-			int offset = 4;
-			if (roll == 1 || roll == 3)//Slightly tilted
-				offset = 8;
-			
-			if (roll == 0 || roll == 4)//Fully tilted
-				offset = 16;
-			
-			bullets.add(new Bullet(x + offset));
-			bullets.add(new Bullet(x + SHIP_WIDTH - offset));
-		}
-		
-		//Asteroid spawn code
-		asteroidSpawnTimer -= delta;
-		if (asteroidSpawnTimer <= 0) {
-			asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
-			asteroids.add(new Asteroid(random.nextInt(SpaceGame.WIDTH - Asteroid.WIDTH)));
-		}
-		
-		//Update asteroids
-		ArrayList<Asteroid> asteroidsToRemove = new ArrayList<Asteroid>();
-		for (Asteroid asteroid : asteroids) {
-			asteroid.update(delta);
-			if (asteroid.remove)
-				asteroidsToRemove.add(asteroid);
-		}
-		
-		//Update bullets
-		ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
-		for (Bullet bullet : bullets) {
-			bullet.update(delta);
-			if (bullet.remove)
-				bulletsToRemove.add(bullet);
-		}
-		
-		//Update explosions
-		ArrayList<Explosion> explosionsToRemove = new ArrayList<Explosion>();
-		for (Explosion explosion : explosions) {
-			explosion.update(delta);
-			if (explosion.remove)
-				explosionsToRemove.add(explosion);
-		}
-		explosions.removeAll(explosionsToRemove);
-		
-		//Movement code
-		if (isLeft()) {//Left
-			x -= SPEED * Gdx.graphics.getDeltaTime();
-			
-			if (x < 0)
-				x = 0;
-			
-			//Update roll if button just clicked
-			if (isJustLeft() && !isRight() && roll > 0) {
-				rollTimer = 0;
-				roll--;
-			}
-			
-			//Update roll
-			rollTimer -= Gdx.graphics.getDeltaTime();
-			if (Math.abs(rollTimer) > ROLL_TIMER_SWITCH_TIME && roll > 0) {
-				rollTimer -= ROLL_TIMER_SWITCH_TIME;
-				roll--;
-			}
-		} else {
-			if (roll < 2) {
-				//Update roll to make it go back to center
-				rollTimer += Gdx.graphics.getDeltaTime();
-				if (Math.abs(rollTimer) > ROLL_TIMER_SWITCH_TIME && roll < 4) {
-					rollTimer -= ROLL_TIMER_SWITCH_TIME;
-					roll++;
-				}
-			}
-		}
-		
-		if (isRight()) {//Right
-			x += SPEED * Gdx.graphics.getDeltaTime();
-			
-			if (x + SHIP_WIDTH > SpaceGame.WIDTH)
-				x = SpaceGame.WIDTH - SHIP_WIDTH;
-			
-			//Update roll if button just clicked
-			if (isJustRight() && !isLeft() && roll > 0) {
-				rollTimer = 0;
-				roll--;
-			}
-			
-			//Update roll
-			rollTimer += Gdx.graphics.getDeltaTime();
-			if (Math.abs(rollTimer) > ROLL_TIMER_SWITCH_TIME && roll < 4) {
-				rollTimer -= ROLL_TIMER_SWITCH_TIME;
-				roll++;
-			}
-		} else {
-			if (roll > 2) {
-				//Update roll
-				rollTimer -= Gdx.graphics.getDeltaTime();
-				if (Math.abs(rollTimer) > ROLL_TIMER_SWITCH_TIME && roll > 0) {
-					rollTimer -= ROLL_TIMER_SWITCH_TIME;
-					roll--;
-				}
-			}
-		}
-		
-		//After player moves, update collision rect
-		playerRect.move(x, y);
-		
-		//After all updates, check for collisions
-		for (Bullet bullet : bullets) {
-			for (Asteroid asteroid : asteroids) {
-				if (bullet.getCollisionRect().collidesWith(asteroid.getCollisionRect())) {//Collision occured
-					bulletsToRemove.add(bullet);
-					asteroidsToRemove.add(asteroid);
-					explosions.add(new Explosion(asteroid.getX(), asteroid.getY()));
-					score += 100;
-				}
-			}
-		}
-		bullets.removeAll(bulletsToRemove);
-		
-		for (Asteroid asteroid : asteroids) {
-			if (asteroid.getCollisionRect().collidesWith(playerRect)) {
-				asteroidsToRemove.add(asteroid);
-				health -= 0.1;
-				
-				//If health is depleted, go to game over screen
-				if (health <= 0) {
-					this.dispose();
-					game.setScreen(new GameOverScreen(game, score));
-					return;
-				}
-			}
-		}
-		asteroids.removeAll(asteroidsToRemove);
-		
-		stateTime += delta;
+    private Texture image;
+    //Character's momentum??
+    private float characterX;
+    private float characterY;
+    
+    private float nexttime;
+    private float currenttime;
+    private float x;
+    private float y;
+    private float rotation = 1;
+    private float velocity = 0;
+    private float zoomSpeed = 1;
+    private float delta;
+    private int lives = 3;
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		game.batch.begin();
-		
-		game.scrollingBackground.updateAndRender(delta, game.batch);
-		
-		GlyphLayout scoreLayout = new GlyphLayout(scoreFont, "" + score);
-		scoreFont.draw(game.batch, scoreLayout, SpaceGame.WIDTH / 2 - scoreLayout.width / 2, SpaceGame.HEIGHT - scoreLayout.height - 10);
-		
-		for (Bullet bullet : bullets) {
-			bullet.render(game.batch);
-		}
-		
-		for (Asteroid asteroid : asteroids) {
-			asteroid.render(game.batch);
-		}
-		
-		for (Explosion explosion : explosions) {
-			explosion.render(game.batch);
-		}
-		
-		//Draw health
-		if (health > 0.6f)
-			game.batch.setColor(Color.GREEN);
-		else if (health > 0.2f)
-			game.batch.setColor(Color.ORANGE);
-		else
-			game.batch.setColor(Color.RED);
-		
-		game.batch.draw(blank, 0, 0, SpaceGame.WIDTH * health, 5);
-		game.batch.setColor(Color.WHITE);
-		
-		game.batch.draw(rolls[roll].getKeyFrame(stateTime, true), x, y, SHIP_WIDTH, SHIP_HEIGHT);
-		
-		//Draw controls instructions
-		if (showControls) {
-			if (SpaceGame.IS_MOBILE) {
-				//Draw left
-				game.batch.setColor(Color.RED);
-				game.batch.draw(controls, 0, 0, SpaceGame.WIDTH / 2, SpaceGame.HEIGHT, 0, 0, SpaceGame.WIDTH / 2, SpaceGame.HEIGHT, false, false);
-	
-				//Draw right
-				game.batch.setColor(Color.BLUE);
-				game.batch.draw(controls, SpaceGame.WIDTH / 2, 0, SpaceGame.WIDTH / 2, SpaceGame.HEIGHT, 0, 0, SpaceGame.WIDTH / 2, SpaceGame.HEIGHT, true, false);
-				
-				game.batch.setColor(Color.WHITE);
-			} else {
-				GlyphLayout instructionsLayout = new GlyphLayout(scoreFont, "Press Left/Right Arrowkeys to Shoot!", Color.WHITE, SpaceGame.WIDTH - 50, Align.center, true);
-				scoreFont.draw(game.batch, instructionsLayout, SpaceGame.WIDTH / 2 - instructionsLayout.width / 2, 150);
-			}
-		}
-		
-		game.batch.end();
-	}
-	
-	private boolean isRight () {
-		return Gdx.input.isKeyPressed(Keys.RIGHT) || (Gdx.input.isTouched() && game.cam.getInputInGameWorld().x >= SpaceGame.WIDTH / 2);
-	}
-	
-	private boolean isLeft () {
-		return Gdx.input.isKeyPressed(Keys.LEFT) || (Gdx.input.isTouched() && game.cam.getInputInGameWorld().x < SpaceGame.WIDTH / 2);
-	}
-	
-	private boolean isJustRight () {
-		return Gdx.input.isKeyJustPressed(Keys.RIGHT) || (Gdx.input.justTouched() && game.cam.getInputInGameWorld().x >= SpaceGame.WIDTH / 2);
-	}
-	
-	private boolean isJustLeft () {
-		return Gdx.input.isKeyJustPressed(Keys.LEFT) || (Gdx.input.justTouched() && game.cam.getInputInGameWorld().x < SpaceGame.WIDTH / 2);
-	}
-	
-	@Override
-	public void resize (int width, int height) {
-		
-	}
+    private Rectangle rectangle;
+    private float asteroidSpawnTimer;
+    Random random;
 
-	@Override
-	public void pause () {
-		
-	}
+    private Sprite sprite;
+    private Batch batch, hudbatch;
+    private BitmapFont font;
+    private Vector2 vec; //Player sprite x, y
+    private SkyGame game;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private ArrayList<Bullet> bullets;
+    private ArrayList<Asteroid> asteroids;
+    private Asteroid asteroid;
+    Texture img, backgroundTexture;
+    TextureRegion imgTextureRegion;
+    public int iFrame = 4;
 
-	@Override
-	public void resume () {
-		
-	}
 
-	@Override
-	public void hide () {
-		
-	}
 
-	@Override
-	public void dispose () {
-		
-	}
+    //Asteroid Related
+    private float min_spawn_time = 0.1f; //Can change values to make asteroids fall faster/slower
+    private float max_spawn_time = 1f;
+    
+    public MainGameScreen(SkyGame game){
+        //Create a new player object
+        try {
+            this.image = new Texture("ship.png");
+        } catch (RuntimeException e ) {
+            this.image = new Texture("triangle-3.png");
+        }
 
+        this.game = game;
+        //Font for drawing text on screen
+        font = new BitmapFont();
+        batch = new SpriteBatch();
+        hudbatch = new SpriteBatch();
+        //Sprite for the given texture
+        sprite = new Sprite(image, 32, 32);
+        sprite.setRotation(rotation);
+        vec = new Vector2(0, 0);
+        
+        sprite.translate(1366, 768);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        viewport = new FitViewport(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, camera);
+        bullets = new ArrayList<Bullet>();
+
+        //Hitbox
+        this.rectangle = new Rectangle(x, y, 32, 32);
+        
+
+        //Asteroid related
+        asteroids = new ArrayList<Asteroid>(); //Array List for Asteroid
+        random = new Random(); //Random for Asteroid spawner
+        asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time; //spawn timer 
+
+        //Draw background texture
+        backgroundTexture = new Texture("genericSpace.jpg"); 
+		backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+		imgTextureRegion = new TextureRegion(backgroundTexture);
+		imgTextureRegion.setRegion(-1366, -768,backgroundTexture.getWidth()*2, backgroundTexture.getHeight()*2);
+    }
+
+    public Texture getCharacter(){ return image;  }
+    public float getX() { return this.sprite.getX(); }
+    public float getY() { return this.sprite.getY(); }
+    public Camera getPlayerCamera() { return this.camera; }
+    public Vector2 getVector2(){ return this.vec; }
+    public Rectangle getHitbox(){ return this.rectangle; }
+    public float getRotation(){ return this.rotation; }
+    public float getVelocity(){ return velocity; }
+
+    public void resizeViewport(int width, int height){
+    }
+
+    //Immunity frames for the player when the ship gets hit.
+    public void getHit(SpaceObject object){
+        velocity = 0;
+        lives--;
+        //If player gets hit, trigger immunity for 4 seconds
+        nexttime = System.nanoTime() + (float)(2*(Math.pow(10, 9)));
+    }
+
+    public void wrap() {
+        if (sprite.getX() > 1366 * 2){
+            sprite.setX(1366*2);
+        } 
+        if (sprite.getX() < 0){
+            sprite.setX(0);
+        }
+        if (sprite.getY() > 768 * 2){
+            sprite.setY(768 * 2);
+        }
+        if (sprite.getY() < 0){
+            sprite.setY(0);
+        }
+
+        //Warns If leaving mission area
+        if (sprite.getX() > (1366 * 2 - 200) || sprite.getX() < 200){
+            font.draw(hudbatch,"Warning: Leaving Mission Area ", (1280 / 2) - 32, 720 / 2);
+        }
+        if (sprite.getY() > (768 * 2) - 200 || sprite.getY() < 200){
+            font.draw(hudbatch,"Warning: Leaving Mission Area ", (1280 / 2) - 32, 720 / 2);
+        }
+    }
+
+    public boolean intersects(Rectangle otherRectangle){
+        Rectangle thisRectangle = new Rectangle(x, y, WIDTH, HEIGHT);
+        return thisRectangle.overlaps(otherRectangle);
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(new InputAdapter() {
+
+        });
+    }
+
+    @Override
+    public void render(float delta) {
+        System.out.println("Hi!");
+        currenttime = System.nanoTime();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        batch.draw(imgTextureRegion, 0, 0);
+
+        x = getX();
+        y = getY();
+        if (lives <= 0){
+            System.out.println("Game Over!");
+        }
+
+
+        delta = Gdx.graphics.getDeltaTime();
+        batch.setProjectionMatrix(camera.combined);
+
+            //Rotate Right
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+                if(rotation < 1){
+                    rotation = 360;
+                }
+                sprite.setRotation((float) (rotation-=3));
+            }
+            //Rotate Left
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+                if(rotation >= 360){
+                    rotation = 1;
+                }
+                sprite.setRotation((float) (rotation+=3));
+            }
+            
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+                velocity += 0.1f;
+            } else if (velocity < 0) {
+                velocity = 0;
+            } else if ( velocity != 0){
+                velocity -= 0.04;
+            }
+
+            if (velocity > 5){
+                velocity = 5;
+            }
+            characterX = (float) (velocity * Math.cos(Math.toRadians(rotation)));
+            characterY =  (float) (velocity * Math.sin(Math.toRadians(rotation)));
+            sprite.translate(characterX, characterY);
+            rectangle.setX(getX());
+            rectangle.setY(getY());
+    
+            //Move Down?
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+                velocity-=1f;
+                if (velocity < 0f){
+                    velocity = 0;
+                }
+            }
+    
+            //Placeholder for camera zoom / camera pan
+            if(Gdx.input.isKeyPressed(Input.Keys.W)){
+                camera.zoom -= zoomSpeed * delta;
+                //Zoom limit 
+                if(camera.zoom <= 0.5){
+                    camera.zoom = 0.5f;
+                }
+            }
+    
+            if(Gdx.input.isKeyPressed(Input.Keys.S)){
+                camera.zoom += zoomSpeed * delta;
+                if(camera.zoom >= 10){ 
+                    camera.zoom = 10f;
+                }
+            }
+            
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+                bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation));
+                //right
+            }
+           
+            //Set Vector2 for x and y of player sprite.
+            vec.set(sprite.getX(), sprite.getY());
+
+            //Draw Bullets and Asteroids and update them
+            for(Bullet bullet: bullets){
+                bullet.render((SpriteBatch)batch);
+            }
+            
+            for(Asteroid asteroid : asteroids){
+                asteroid.render((SpriteBatch) batch);
+                //If player gets hit.
+                if (this.getHitbox().overlaps(asteroid.getHitbox())){
+                    //Checks if the time is greater than the end of I frames
+                    if (currenttime > nexttime){                      
+                        System.out.println("true" + lives);
+                        getHit(asteroid); 
+                    }
+                } else {
+                    
+                }
+                
+                //If a bullet hits an asteroid.
+                for (Bullet bullet : bullets){
+                    if (bullet.getHitbox().overlaps(asteroid.getHitbox())){
+                        bullet.remove = true;
+                        asteroid.remove = true;
+                    }
+                }      
+            }
+            
+            if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+                System.out.println("P");
+                this.dispose();
+            }
+
+            //Collision detection for asteroid and bullet, or asteroid and player.
+            for (Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){
+                Asteroid asteroids = it.next();
+
+                if(asteroids.remove){
+                    it.remove();
+                }
+            }
+
+            for ( Iterator<Bullet> it = bullets.iterator(); it.hasNext(); ){             
+                Bullet bullets = it.next();
+                bullets.update(delta);
+    
+                
+                if(bullets.remove){
+                    it.remove();                    
+                }             
+            }
+
+            if (asteroids.isEmpty()){
+                System.out.println("Asteroids are empty");
+            }
+
+
+            //Asteroid Spawn Timer
+            asteroidSpawnTimer -= delta;
+            if (asteroidSpawnTimer <=0){
+                asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time;
+                asteroids.add(new Asteroid(random.nextInt(2470 - 16),rotation));
+            }
+
+            //Asteroid Render 
+            for (Asteroid asteroid: asteroids){
+
+                asteroid.render((SpriteBatch) batch); //renders top-bottom asteroids
+
+            }
+            
+            
+
+            //asteroid Update
+            for ( Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){             
+                Asteroid asteroids = it.next();
+
+                asteroids.update(delta);
+
+                if(asteroids.remove){
+                    it.remove();
+                }
+            }
+            
+
+            //Camera to texture center not 0,0
+            resizeViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            camera.position.set(x + 32, y + 32, 0);
+            camera.update();
+            sprite.draw(batch);
+            batch.end();
+
+            hudbatch.begin();
+            font.draw(hudbatch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
+            font.draw(hudbatch,"Speed: " + String.valueOf(velocity), 10, 690);
+            font.draw(hudbatch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
+            font.draw(hudbatch, "Lives " + lives, 10, 650);
+            wrap();
+            hudbatch.end();
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        image.dispose();
+        
+    }
 }
+

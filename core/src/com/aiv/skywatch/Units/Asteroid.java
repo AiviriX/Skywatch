@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 import java.util.Random;
 
-import com.aiv.skywatch.Game;
+import com.aiv.skywatch.SkyGame;
 
 
 public class Asteroid extends SpaceObject {
@@ -36,7 +36,7 @@ public class Asteroid extends SpaceObject {
 
     public Asteroid(float x, float rotation){
         if (texture == null){
-            Asteroid.texture = new Texture(Gdx.files.internal("asteroid.png"));
+            Asteroid.texture = new Texture(Gdx.files.internal("asteroid128.png"));
         }
         
         
