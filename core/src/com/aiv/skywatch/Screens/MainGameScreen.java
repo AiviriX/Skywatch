@@ -13,6 +13,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.ApplicationListener;
@@ -70,6 +71,8 @@ public class MainGameScreen implements Screen {
     Texture img, backgroundTexture;
     TextureRegion imgTextureRegion;
     public int iFrame = 4;
+    Sound explosion, shoot;
+    public int kills;
 
 
 
@@ -80,12 +83,13 @@ public class MainGameScreen implements Screen {
     public MainGameScreen(SkyGame game){
         //Create a new player object
         try {
-            this.image = new Texture("ship.png");
+            this.image = new Texture("Spaceship2.png");
         } catch (RuntimeException e ) {
             this.image = new Texture("triangle-3.png");
         }
 
         this.game = game;
+        kills = 0;
         //Font for drawing text on screen
         font = new BitmapFont();
         batch = new SpriteBatch();
@@ -114,6 +118,11 @@ public class MainGameScreen implements Screen {
 		backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 		imgTextureRegion = new TextureRegion(backgroundTexture);
 		imgTextureRegion.setRegion(-1366, -768,backgroundTexture.getWidth()*2, backgroundTexture.getHeight()*2);
+
+        shoot = Gdx.audio.newSound(Gdx.files.internal("Sounds/shoot.wav"));
+        explosion = Gdx.audio.newSound(Gdx.files.internal("Sounds/explode-1.wav"));
+
+
     }
 
     public Texture getCharacter(){ return image;  }
@@ -149,6 +158,7 @@ public class MainGameScreen implements Screen {
         if (sprite.getY() < 0){
             sprite.setY(0);
         }
+
 
         //Warns If leaving mission area
         if (sprite.getX() > (1366 * 2 - 200) || sprite.getX() < 200){
@@ -248,7 +258,7 @@ public class MainGameScreen implements Screen {
             
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 bullets.add(new Bullet(sprite.getX(), sprite.getY(), rotation));
-                //right
+                shoot.play(0.3f);
             }
            
             //Set Vector2 for x and y of player sprite.
@@ -277,6 +287,8 @@ public class MainGameScreen implements Screen {
                     if (bullet.getHitbox().overlaps(asteroid.getHitbox())){
                         bullet.remove = true;
                         asteroid.remove = true;
+                        explosion.play(0.3f);
+                        kills++;
                     }
                 }      
             }
@@ -289,7 +301,6 @@ public class MainGameScreen implements Screen {
             //Collision detection for asteroid and bullet, or asteroid and player.
             for (Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){
                 Asteroid asteroids = it.next();
-
                 if(asteroids.remove){
                     it.remove();
                 }
@@ -314,24 +325,20 @@ public class MainGameScreen implements Screen {
             asteroidSpawnTimer -= delta;
             if (asteroidSpawnTimer <=0){
                 asteroidSpawnTimer = random.nextFloat() * (max_spawn_time - min_spawn_time) + min_spawn_time;
-                asteroids.add(new Asteroid(random.nextInt(2470 - 16),rotation));
+                asteroids.add(new Asteroid(random.nextInt(2470 - 16), rotation));
             }
 
             //Asteroid Render 
             for (Asteroid asteroid: asteroids){
-
                 asteroid.render((SpriteBatch) batch); //renders top-bottom asteroids
-
             }
-            
+               
             
 
             //asteroid Update
             for ( Iterator<Asteroid> it = asteroids.iterator(); it.hasNext(); ){             
                 Asteroid asteroids = it.next();
-
                 asteroids.update(delta);
-
                 if(asteroids.remove){
                     it.remove();
                 }
@@ -349,7 +356,8 @@ public class MainGameScreen implements Screen {
             font.draw(hudbatch,"Rotation Axis: " + String.valueOf(rotation), 10, 710);
             font.draw(hudbatch,"Speed: " + String.valueOf(velocity), 10, 690);
             font.draw(hudbatch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
-            font.draw(hudbatch, "Lives " + lives, 10, 650);
+            font.draw(hudbatch, "Lives " + lives, 10, 655);
+            font.draw(hudbatch, "Kills " + kills, 10, 635);
             wrap();
             hudbatch.end();
 
@@ -380,9 +388,15 @@ public class MainGameScreen implements Screen {
 
     @Override
     public void dispose() {
+        //Program Cleanup
+        for (Asteroid asteroid : asteroids){
+            
+        }
+        shoot.dispose();
+        explosion.dispose();
+        hudbatch.dispose();
         batch.dispose();
         image.dispose();
-        
     }
 }
 
