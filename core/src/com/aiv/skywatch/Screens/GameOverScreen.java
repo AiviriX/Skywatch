@@ -29,9 +29,9 @@ public class GameOverScreen extends ScreenAdapter{
     private TextureRegion myTextureRegion;
     private TextureRegionDrawable myTexRegionDrawable;
     private ImageButton button;
+    private int kills;
 
-
-    public GameOverScreen(SkyGame game){
+    public GameOverScreen(SkyGame game, int score){
         this.game = game;
         myTexture = new Texture(Gdx.files.internal("badlogic.jpg"));
         myTextureRegion = new TextureRegion(myTexture);
@@ -41,6 +41,7 @@ public class GameOverScreen extends ScreenAdapter{
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
         stage.addActor(button); //Add the button to the stage to perform rendering and take input.
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui    }
+        this.kills = score;
     }
 
     @Override
@@ -71,6 +72,8 @@ public class GameOverScreen extends ScreenAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
         game.font.draw(game.batch, "GAME OVER", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .5f);
+        game.font.draw(game.batch, "Total Kills: " + kills, Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .5f - 20);
+        game.font.draw(game.batch, "Press Spacebar to play again.", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .5f - 40);
         game.batch.end();
         stage.draw();        
     }

@@ -27,7 +27,7 @@ public class MainMenuScreen extends ScreenAdapter {
                 }
 
                 if(keyCode == Input.Keys.X){
-                    game.setScreen(new GameOverScreen(game));
+                    game.setScreen(new GameOverScreen(game, 0));
                     System.out.println("hi");
                 }
                 return true;
