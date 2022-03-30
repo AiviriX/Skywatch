@@ -25,6 +25,11 @@ public class MainMenuScreen extends ScreenAdapter {
 					System.out.println("Ho");
 					hide();
                 }
+
+                if(keyCode == Input.Keys.X){
+                    game.setScreen(new GameOverScreen(game));
+                    System.out.println("hi");
+                }
                 return true;
             }
         });
@@ -35,9 +40,10 @@ public class MainMenuScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
-        game.font.draw(game.batch, "Title Screen!", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .75f);
-        game.font.draw(game.batch, "Click the circle to win.", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .5f);
+        game.font.draw(game.batch, "SKYWATCH", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .75f);
+        game.font.draw(game.batch, "Press x to gameOver.", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .5f);
         game.font.draw(game.batch, "Press space to play.", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .25f);
+        game.font.draw(game.batch, "Spacebar to shoot, Up key to accelerate,\n Left Right Keys to turn. Happy Hunting!", Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight() * .1f);
         game.batch.end();
     }
 

@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import org.w3c.dom.css.Rect;
 
-public class Bullet {
+public class Bullet {     
     public static final float SPEED = 1000f;
 
     public static float speed;
@@ -20,6 +20,8 @@ public class Bullet {
     private final int WIDTH = 16;
     private final int HEIGHT = 16;
     private Rectangle rectangle;
+    private float currentTime, nextTime;
+
     float x, y;
     Hitbox hitbox;
     public boolean remove = false;
@@ -63,6 +65,12 @@ public class Bullet {
             remove = true;
         } 
 
+        currentTime = System.nanoTime();
+        nextTime = System.nanoTime() + (float)(1*(Math.pow(10, 9)));
+        
+        if (currentTime >= nextTime){
+            remove = true;
+        }
     
         rectangle.setX(x);
         rectangle.setY(y);

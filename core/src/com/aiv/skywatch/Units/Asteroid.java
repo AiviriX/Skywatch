@@ -2,15 +2,11 @@ package com.aiv.skywatch.Units;
 
 import com.aiv.skywatch.SpaceObject;
 import com.aiv.skywatch.Tools.Hitbox;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-
-import java.util.Random;
-
-import com.aiv.skywatch.SkyGame;
 
 
 public class Asteroid extends SpaceObject {

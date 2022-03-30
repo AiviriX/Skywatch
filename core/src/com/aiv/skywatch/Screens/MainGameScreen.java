@@ -1,37 +1,31 @@
 package com.aiv.skywatch.Screens;
 
-import com.aiv.skywatch.SpaceObject;
-import com.aiv.skywatch.Bullets.Bullet;
-import com.aiv.skywatch.Units.Asteroid;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
 import com.aiv.skywatch.SkyGame;
+import com.aiv.skywatch.SpaceObject;
+import com.aiv.skywatch.Bullets.Bullet;
+import com.aiv.skywatch.Units.Asteroid;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectArray.less;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 //Framework for unit creation
@@ -71,7 +65,7 @@ public class MainGameScreen implements Screen {
     Texture img, backgroundTexture;
     TextureRegion imgTextureRegion;
     public int iFrame = 4;
-    Sound explosion, shoot;
+    Sound explosion, shoot, score;
     public int kills;
 
 
@@ -121,7 +115,7 @@ public class MainGameScreen implements Screen {
 
         shoot = Gdx.audio.newSound(Gdx.files.internal("Sounds/shoot.wav"));
         explosion = Gdx.audio.newSound(Gdx.files.internal("Sounds/explode-1.wav"));
-
+        score = Gdx.audio.newSound(Gdx.files.internal("Sounds/collect-point-1.wav"));
 
     }
 
@@ -143,6 +137,10 @@ public class MainGameScreen implements Screen {
         lives--;
         //If player gets hit, trigger immunity for 4 seconds
         nexttime = System.nanoTime() + (float)(2*(Math.pow(10, 9)));
+    }
+
+    public void gameOver(){
+        game.setScreen(new GameOverScreen(game));
     }
 
     public void wrap() {
@@ -194,6 +192,7 @@ public class MainGameScreen implements Screen {
         y = getY();
         if (lives <= 0){
             System.out.println("Game Over!");
+            gameOver();
         }
 
 
