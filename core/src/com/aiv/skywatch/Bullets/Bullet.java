@@ -1,5 +1,6 @@
 package com.aiv.skywatch.Bullets;
 
+import com.aiv.skywatch.SpaceObject;
 import com.aiv.skywatch.Tools.Hitbox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Collision;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import org.w3c.dom.css.Rect;
 
-public class Bullet {     
+public class Bullet extends SpaceObject {     
     public static final float SPEED = 1000f;
 
     public static float speed;

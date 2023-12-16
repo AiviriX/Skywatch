@@ -45,7 +45,6 @@ public class MainGameScreen implements Screen {
     private float rotation = 1;
     private float velocity = 0;
     private float zoomSpeed = 1;
-    private float delta;
     private int lives = 3;
 
     private Rectangle rectangle;
@@ -357,6 +356,7 @@ public class MainGameScreen implements Screen {
             font.draw(hudbatch,"x: " + sprite.getX() + " y: " + sprite.getY(), 10, 675);
             font.draw(hudbatch, "Lives " + lives, 10, 655);
             font.draw(hudbatch, "Kills " + kills, 10, 635);
+            font.draw(hudbatch, "cos " + Math.sin(Math.toRadians(rotation)), 10, 610);
             wrap();
             hudbatch.end();
 
